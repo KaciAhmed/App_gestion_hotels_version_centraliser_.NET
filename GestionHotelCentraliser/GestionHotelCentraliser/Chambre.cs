@@ -20,6 +20,15 @@ namespace GestionHotelCentraliser
             HistoriqueReservations = new List<Reservation>();
         }
 
+        public Chambre(int numero, int nbLit, float prix, bool estLibre)
+        {
+            Numero = numero;
+            NbLit = nbLit;
+            Prix = prix;
+            EstLibre = estLibre;
+            HistoriqueReservations = new List<Reservation>();
+        }
+
         public Chambre(int numero, int nbLit, float prix, Hotel hotel, IList<Reservation> historiqueReservations)
         {
             Numero = numero;
@@ -28,5 +37,7 @@ namespace GestionHotelCentraliser
             Hotel = hotel;
             HistoriqueReservations = historiqueReservations;
         }
+
+
     }
 }

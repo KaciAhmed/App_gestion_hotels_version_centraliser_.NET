@@ -6,38 +6,26 @@ namespace GestionHotelCentraliser
 {
     class Reservation
     {
-        public DateTime DateDebut { get; set; }
-        public DateTime DateFin { get; set; }
+        public string DateDebut { get; set; }
+        public string DateFin { get; set; }
         public int NbPersonne { get; set; }
 
         public Client Client { get; set; }
 
-        public IList<Chambre> Chambres { get; set; }
+        public Chambre Chambre { get; set; }
 
-        public Reservation()
-        {
-            Chambres = new List<Chambre>();
+        public float Prix {
+            get => Chambre.Prix;
         }
+        public Reservation(){}
 
-        public Reservation(DateTime dateDebut, DateTime dateFin, int nbPersonne, Client client, IList<Chambre> chambres)
+        public Reservation(string dateDebut, string dateFin, int nbPersonne, Client client)
         {
             DateDebut = dateDebut;
             DateFin = dateFin;
             NbPersonne = nbPersonne;
             Client = client;
-            Chambres = chambres;
         }
-
-        // vérifier que le nombre  de personne corespond au nobre de lits des chambres réserver
-
-        public float calculerPrix()
-        {
-            float prixTotal=0;
-            foreach(Chambre c in Chambres)
-            {
-                prixTotal += c.Prix;
-            }
-            return prixTotal;
-        }
+        
     }
 }
