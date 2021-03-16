@@ -1,0 +1,6 @@
+project.assets.json
+project.nuget.cache
+*.props
+*.dgspec.json
+*.cache
+GestionHotelCentraliser/GestionHotelCentraliser/obj/
