@@ -5,44 +5,9 @@ namespace GestionHotelCentraliser
 {
     class Program
     {
-        // Generates a random number within a range.
-        public static int RandomNumber(int min, int max)  
+        private static IList <Hotel> initialiserHotels(int nombreHotelsMax)
         {
-            Random _random = new Random();
-            return _random.Next(min, max);  
-        }
-
-        public static float RandomNumberFloat(int min, int max)  
-        {
-            Random _random = new Random();
-            return (float) _random.Next(min, max);  
-        }
-
-        private static IList <Hotel> initialiserHotels(int nombreHotels)
-        {
-            IList<Hotel> hotels = new List<Hotel>();
-            Chambre chambre;
-            int prix;
-            int nbLit;
-            int nbChambres = 10;
-            Hotel hotel;
-            String nomHotel;
-            float nbEtoile;
-            for (int i=0;i<nombreHotels; i++)
-            {
-                nomHotel = "Hotel " + RandomNumberFloat(0, nombreHotels);
-                nbEtoile = RandomNumberFloat(0, 5);
-                hotel = new Hotel(nomHotel, i,"rue "+i,"ville "+i,"pays "+i,"positionGPS "+i,"lieu Dit "+i,nbEtoile);
-                for(int j = 0; j < nbChambres; j++)
-                {
-                    prix = RandomNumber(0, 100);
-                    nbLit = RandomNumber(1,3);
-                    chambre = new Chambre(j, nbLit, prix, true);
-                    hotel.Chambres.Add(chambre);
-                }
-                hotels.Add(hotel);
-            }
-            return hotels;
+            return Hotel.creerHotels(nombreHotelsMax);
         }
 
         public static void TraitrerClient(IList<Hotel> tousLesHotels)
@@ -56,13 +21,13 @@ namespace GestionHotelCentraliser
             int nombrePersonnes;
             int continuer = 1;
             string nomHotelChoisis;
-            Hotel hotelChoisis;
-            Chambre chambreChoisis;
+            Hotel hotelChoisis = null;
+            Chambre chambreChoisis = null;
             int numChambreChoisis;
             string nomClient;
             string prenomClient;
-            string infoCarteCreditClient="";
-            Client client=null;
+            string infoCarteCreditClient = "";
+            Client client = null;
             Reservation reservation;
 
 
@@ -71,66 +36,81 @@ namespace GestionHotelCentraliser
 
             while(continuer==1)
             {
-                Console.WriteLine("Ville de sejour ? ");
-                villeSejour = Console.ReadLine();
-                Console.WriteLine("Date d'arriver ? DD/MM/YY ");
-                dateArrivee = Console.ReadLine();
-                Console.WriteLine("Date de depart ? DD/MM/YY ");
-                dateDepart = Console.ReadLine();
-                Console.WriteLine("Prix minimum de la chambre ? ");
-                prixMin = float.Parse(Console.ReadLine());
-                Console.WriteLine("Prix maximum de la chambre ? ");
-                prixMax = float.Parse(Console.ReadLine());
-                Console.WriteLine("Nombre d'etoile ? ");
-                nombreEtoiles = float.Parse(Console.ReadLine());
-                Console.WriteLine("Nombre de personne a heberger (entre 1 et 3) ? ");
-                nombrePersonnes = int.Parse(Console.ReadLine());
+                // saisie
+                villeSejour = saisie("ville");
+                dateArrivee = saisie("date d'arriver");
+                dateDepart = saisie("date de depart");
+                prixMin = float.Parse(saisie("prix minimum"));
+                prixMax = float.Parse(saisie("prix maximum"));
+                nombreEtoiles = float.Parse(saisie("nombre d'etoile minimum"));
+                nombrePersonnes = int.Parse(saisie("nombre de personne a heberger entre 1 et 3 (refaite une reservation pour plus de personne)"));
+
+                // recherche selon les criteres ci dessus
                 hotelsResultat = rechercherHotels(tousLesHotels,villeSejour,dateArrivee,dateDepart,prixMin,prixMax,nombreEtoiles,nombrePersonnes);
-                // affichage des hotels résultats
+
+                // affichage des hotels satisfaisant la requete precedente
                 foreach(Hotel hotel in hotelsResultat)
                 {
                     afficherHotelDisponible(hotel, nombrePersonnes);
                 }
+                
+                // saisie des informations pour la reservation
                 do
                 {
-                    hotelChoisis = null;
-                    Console.WriteLine("Veuillez saisir le nom de l'hotel dans lequel vous souhaitez effectuer une réservation");
-                    nomHotelChoisis = Console.ReadLine();
-                    hotelChoisis = chercherHotelParNom(tousLesHotels,nomHotelChoisis);
-                    if (hotelChoisis == null)
+                    if (hotelsResultat.Count > 0)
                     {
-                        Console.WriteLine("le nom de l'hotel saisis est incorrecte");
+                        
+                        Console.WriteLine("Veuillez saisir le nom de l'hotel dans lequel vous souhaitez effectuer une reservation");
+                        nomHotelChoisis = Console.ReadLine();
+                        hotelChoisis = chercherHotelParNom(tousLesHotels, nomHotelChoisis);
+                        if (hotelChoisis == null)
+                        {
+                            Console.WriteLine("le nom de l'hotel saisis est incorrecte");
+                        }
+                    }else
+                    {
+                        Console.WriteLine("Aucun resultat.");
+
+                        // trois initialisation parce que si il n'y a pas d'hotel a choisir, les deux boucle qui suivent sont inutiles
+                        hotelChoisis = new Hotel();
+                        chambreChoisis = new Chambre();
+                        client = new Client();
                     }
                 } while (hotelChoisis == null);
+                
                 do
-                {
-                    chambreChoisis = null;
-                    Console.WriteLine("Veuillre saisir le numéro de la chambre que vous souhaiter réserver");
+                { 
+                    Console.WriteLine("Veuillre saisir le numero de la chambre que vous souhaiter reserver");
                     numChambreChoisis = int.Parse(Console.ReadLine());
                     chambreChoisis = chercherChambreParNumero(hotelChoisis, numChambreChoisis, nombrePersonnes);
                     if (chambreChoisis == null)
                     {
-                        Console.WriteLine("le numéro de la chambre saisis est incorrecte");
+                        Console.WriteLine("le numero de la chambre saisis est incorrecte");
                     }
                 } while (chambreChoisis == null);
-                 
 
                 if(client == null)
                 {
                     Console.WriteLine("Veuillre saisir votre nom svp");
                     nomClient = Console.ReadLine();
-                    Console.WriteLine("Veuillre saisir votre prénom svp");
+                    Console.WriteLine("Veuillre saisir votre prenom svp");
                     prenomClient = Console.ReadLine();
-                    Console.WriteLine("Veuillez inserez les informations de la catre de crédit de paiement");
+                    Console.WriteLine("Veuillez inserez les informations de la catre de credit de paiement");
                     infoCarteCreditClient = Console.ReadLine();
                     client = new Client(nomClient, prenomClient);
                 }
-                reservation = new Reservation(dateArrivee, dateDepart, nombrePersonnes, infoCarteCreditClient, client,chambreChoisis);
+                reservation = new Reservation(dateArrivee, dateDepart, nombrePersonnes, infoCarteCreditClient, client, chambreChoisis);
                 client.Reservations.Add(reservation);
-                Console.WriteLine("********************Reservation éffecuter avec succées**********************");
+                Console.WriteLine("********************Transaction effecuter avec succees**********************");
                 Console.WriteLine("Pour effectuer une nouvelle reservation tapez 1 / autre pour quitter");
                 continuer = int.Parse(Console.ReadLine());
             }
+        }
+        private static string saisie(string nomAfficher)
+        {
+            Console.WriteLine("Saisir " + nomAfficher + " ?");
+            string res = Console.ReadLine();
+            return res;
         }
         public static Hotel chercherHotelParNom(IList<Hotel> hotels ,String nom)
         {
@@ -153,53 +133,35 @@ namespace GestionHotelCentraliser
             return null;
 
         }
-      
-      
         public static void afficherHotelDisponible(Hotel hotel, int nbLit)
         {
             foreach(Chambre chambre in hotel.Chambres)
             {
                 if(chambre.NbLit == nbLit)
                 {
-                    Console.WriteLine("Hotel : Nom = {0} , Numero = {1} , Rue ={2} , Ville = {3} , Pays = {4}, PositionGPS = {5} , lieuDit = {6} , Prix = {7}, Nombre d'étoiles = {8}, Nombre de lits Proposer = {9}, Numéro de la chambre = {10}",hotel.Nom, hotel.Numero, hotel.Rue, hotel.Ville, hotel.Pays, hotel.PositionGPS, hotel.LieuDit, chambre.Prix, hotel.NbEtoile,chambre.NbLit,chambre.Numero);
+                    Console.WriteLine($"Nom = {hotel.Nom} , a l'adresse {hotel.Numero}, {hotel.Rue} , {hotel.Ville} , {hotel.Pays}, {hotel.PositionGPS} , {hotel.LieuDit} , au prix de {chambre.Prix:C}, Nombre d'etoiles = {hotel.NbEtoile}, Nombre de lits proposer = {chambre.NbLit}, chambre N° = {chambre.Numero}");
                 }
             }
 
         }
-
         public static IList <Hotel> rechercherHotels(IList<Hotel> tousLesHotels,string villeSejour, string dateArrivee, string dateDepart, float prixMin, float prixMax, float nombreEtoiles, int nombrePersonnes)
         {
             IList<Hotel> hotelsResultat = new List<Hotel>();
-            float prixMinTemp;
-            float prixMaxTemp;
-
             foreach(Hotel hotel in tousLesHotels)
             {
-              
-
-                if (hotel.Ville.Equals(villeSejour) && nombreEtoiles <= hotel.NbEtoile)
+                if(hotel.satisfaitContrainte(villeSejour, prixMin, prixMax, nombreEtoiles, nombrePersonnes))
                 {
-                    prixMinTemp = hotel.getPrixMinChambresDisponible(nombrePersonnes);
-                    prixMaxTemp = hotel.getPrixMaxChambresDisponibles(nombrePersonnes);
-                    if(prixMin <= prixMinTemp && prixMaxTemp <= prixMax)
-                    {
-                        hotelsResultat.Add(hotel);
-                    }
-                    
+                    hotelsResultat.Add(hotel);
                 }
             }
             return hotelsResultat;
         }
-
         static void Main(string[] args)
         {
             Console.WriteLine("Gestion d'Hotel Centraliser !");
-
-    
-            IList<Hotel>listHotels = initialiserHotels(5);
+            const int NombreHotels = 5;
+            IList<Hotel>listHotels = initialiserHotels(NombreHotels);
             TraitrerClient(listHotels);
-        
-
         }
     }
 }
