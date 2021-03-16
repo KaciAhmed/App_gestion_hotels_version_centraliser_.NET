@@ -3,4 +3,5 @@ project.nuget.cache
 *.props
 *.dgspec.json
 *.cache
-GestionHotelCentraliser/GestionHotelCentraliser/obj/
+GestionHotelCentraliser/GestionHotelCentraliser/obj/*
+GestionHotelCentraliser/GestionHotelCentraliser/bin/*
