@@ -10,22 +10,25 @@ namespace GestionHotelCentraliser
         public string DateFin { get; set; }
         public int NbPersonne { get; set; }
 
+        public string InfoCarteCreditPaiement { get; set; }
         public Client Client { get; set; }
 
         public Chambre Chambre { get; set; }
+
 
         public float Prix {
             get => Chambre.Prix;
         }
         public Reservation(){}
 
-        public Reservation(string dateDebut, string dateFin, int nbPersonne, Client client)
+        public Reservation(string dateDebut, string dateFin, int nbPersonne, string infoCarteCreditPaiement, Client client, Chambre chambre)
         {
             DateDebut = dateDebut;
             DateFin = dateFin;
             NbPersonne = nbPersonne;
+            InfoCarteCreditPaiement = infoCarteCreditPaiement;
             Client = client;
+            Chambre = chambre;
         }
-        
     }
 }
