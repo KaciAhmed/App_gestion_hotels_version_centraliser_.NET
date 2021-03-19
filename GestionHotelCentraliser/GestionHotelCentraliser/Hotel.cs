@@ -39,7 +39,7 @@ namespace GestionHotelCentraliser
         private static Hotel creerHotel(int numeroHotel)
         {
             Hotel hotel;
-            String nomHotel = "Hotel " + MyRandom.RandomNumberFloat(0, numeroHotel);
+            String nomHotel = "Hotel " + numeroHotel; // yanis ;-D
             float nbEtoile = MyRandom.RandomNumberFloat(0, 5);
             int nbChambres = 10;
             hotel = new Hotel(nomHotel,
@@ -50,7 +50,11 @@ namespace GestionHotelCentraliser
                               "positionGPS " + MyRandom.RandomNumber(0, 125),
                               "lieu Dit " + MyRandom.RandomNumber(0, 125),
                               nbEtoile);
-            hotel.Chambres = Chambre.creerChambresAleatoire(nbChambres); ;
+            hotel.Chambres = Chambre.creerChambresAleatoire(nbChambres);
+            foreach(Chambre chambre in hotel.Chambres)
+            {
+                chambre.Hotel = hotel;
+            }
             return hotel;
         }
         public float getPrixMinChambresDisponible(int nbLit)
@@ -142,11 +146,11 @@ namespace GestionHotelCentraliser
             }
             return false;
         }
-        public Chambre chercherChambreParNumero(int numChambreChoisis)
+        public Chambre chercherChambreParNumero(int numChambreChoisis, int nbLit)
         {
             foreach (Chambre chambre in Chambres)
             {
-                if (chambre.Numero == numChambreChoisis)
+                if (chambre.Numero == numChambreChoisis && chambre.NbLit == nbLit && chambre.EstLibre)
                 {
                     return chambre;
                 }                    

@@ -26,6 +26,9 @@ namespace GestionHotelCentraliser
             string prenomClient;
             string infoCarteCreditClient = "";
             Boolean occunResultat;
+            Hotel hotelChoisis;
+            Chambre chambreChoisis;
+            Client client;
 
             Reservation reservation;
 
@@ -33,9 +36,9 @@ namespace GestionHotelCentraliser
 
             while (continuer == 1)
             {
-                Hotel hotelChoisis = null;
-                Chambre chambreChoisis = null;
-                Client client = null;
+                hotelChoisis = null;
+                chambreChoisis = null;
+                client = null;
                 occunResultat = false;
                 // saisie
                 villeSejour = saisie("ville");
@@ -71,20 +74,13 @@ namespace GestionHotelCentraliser
                     {
                         Console.WriteLine("Aucun resultat.");
                         occunResultat = true;
-
-                        // trois initialisation parce que si il n'y a pas d'hotel a choisir, les deux boucle qui suivent sont inutiles
-                        /*
-                         * hotelChoisis = new Hotel();
-                         * chambreChoisis = new Chambre();
-                          client = new Client();
-                        */
                     }
-                } while (hotelChoisis == null && !occunResultat); +
+                } while (hotelChoisis == null && !occunResultat); 
 
                 while (chambreChoisis == null && !occunResultat)
                 {
                     numChambreChoisis = int.Parse(saisie("le numero de la chambre que vous souhaiter reserver"));
-                    chambreChoisis = hotelChoisis.chercherChambreParNumero(numChambreChoisis);
+                    chambreChoisis = hotelChoisis.chercherChambreParNumero(numChambreChoisis,nombrePersonnes);
                     if (chambreChoisis == null)
                     {
                         Console.WriteLine("le numero de la chambre saisis est incorrecte");
@@ -100,7 +96,10 @@ namespace GestionHotelCentraliser
                 }
                 if (!occunResultat)
                 {
+               
                     reservation = new Reservation(dateArrivee, dateDepart, nombrePersonnes, infoCarteCreditClient, client, chambreChoisis);
+                    chambreChoisis.EstLibre = false;
+                    chambreChoisis.HistoriqueReservations.Add(reservation);
                     client.Reservations.Add(reservation);
                 }
                 Console.WriteLine("********************Transaction effecuter avec succees**********************");
@@ -135,11 +134,12 @@ namespace GestionHotelCentraliser
         }
         public static void afficherHotelDisponible(Hotel hotel, int nbLit)
         {
+            Console.WriteLine($"Nom = {hotel.Nom} , a l'adresse {hotel.Numero}, {hotel.Rue} , {hotel.Ville} , {hotel.Pays}, {hotel.PositionGPS} , {hotel.LieuDit}, nombre d'etoiles = {hotel.NbEtoile},");
             foreach (Chambre chambre in hotel.Chambres)
             {
-                if (chambre.NbLit == nbLit)
+                if (chambre.NbLit == nbLit && chambre.EstLibre)
                 {
-                    Console.WriteLine($"Nom = {hotel.Nom} , a l'adresse {hotel.Numero}, {hotel.Rue} , {hotel.Ville} , {hotel.Pays}, {hotel.PositionGPS} , {hotel.LieuDit} , au prix de {chambre.Prix:C}, Nombre d'etoiles = {hotel.NbEtoile}, Nombre de lits proposer = {chambre.NbLit}, chambre N° = {chambre.Numero}");
+                    Console.WriteLine($"\tau prix de {chambre.Prix:C}, nombre de lits proposer = {chambre.NbLit}, chambre N° = {chambre.Numero}");
                 }
             }
 
