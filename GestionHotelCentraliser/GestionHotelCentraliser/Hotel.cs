@@ -127,7 +127,7 @@ namespace GestionHotelCentraliser
         /// <param name="nombreEtoiles"></param>
         /// <param name="nombrePersonnes"></param>
         /// <returns>Vrai si toutes les contraintes sont satisfaites, faux dans tous les autres cas.</returns>
-        internal bool satisfaitContrainte(string villeSejour, float prixMin, float prixMax, float nombreEtoiles, int nombrePersonnes)
+        public bool satisfaitContrainte(string villeSejour, float prixMin, float prixMax, float nombreEtoiles, int nombrePersonnes)
         {
             float prixMinTemp;
             float prixMaxTemp;
@@ -141,6 +141,17 @@ namespace GestionHotelCentraliser
                 }
             }
             return false;
+        }
+        public Chambre chercherChambreParNumero(int numChambreChoisis)
+        {
+            foreach (Chambre chambre in Chambres)
+            {
+                if (chambre.Numero == numChambreChoisis)
+                {
+                    return chambre;
+                }                    
+            }
+            return null;
         }
     }
 }
